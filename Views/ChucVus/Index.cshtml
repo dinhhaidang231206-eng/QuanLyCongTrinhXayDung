@@ -1,0 +1,102 @@
+@model IEnumerable<QuanLyCongTrinhXayDung.Models.ChucVu>
+
+@{
+    ViewData["Title"] = "Quản lý Chức Vụ";
+    var thanhVienCounts = ViewBag.ThanhVienCounts as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var nhanCongCounts = ViewBag.NhanCongCounts as Dictionary<int, int> ?? new Dictionary<int, int>();
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0"><i class="bi bi-briefcase-fill text-primary"></i> Quản lý Chức Vụ</h2>
+            <p class="text-muted">Danh sách các chức vụ trong hệ thống và quyền hạn tương ứng</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary rounded-pill px-4">
+            <i class="bi bi-plus-lg me-2"></i>Thêm chức vụ
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            bool isAdmin = item.TenChucVu == "Admin" || item.TenChucVu == "Quản trị viên";
+            int soThanhVien = thanhVienCounts.ContainsKey(item.Id) ? thanhVienCounts[item.Id] : 0;
+            int soNhanCong = nhanCongCounts.ContainsKey(item.Id) ? nhanCongCounts[item.Id] : 0;
+            string cardBorder = isAdmin ? "border-danger" : "border-primary";
+            string badgeColor = isAdmin ? "bg-danger" : "bg-secondary";
+            string iconClass = isAdmin ? "bi-shield-fill text-danger" : "bi-person-badge text-primary";
+
+            <div class="col-md-4 col-lg-3">
+                <div class="card h-100 shadow-sm border-2 @cardBorder">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <i class="bi @iconClass display-5"></i>
+                            @if (isAdmin)
+                            {
+                                <span class="badge bg-danger rounded-pill px-3">
+                                    <i class="bi bi-shield-check me-1"></i>Có quyền Admin
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary rounded-pill px-3">
+                                    <i class="bi bi-person me-1"></i>Thành viên
+                                </span>
+                            }
+                        </div>
+
+                        <h5 class="fw-bold mb-1">@item.TenChucVu</h5>
+                        <p class="text-muted small mb-3">@(string.IsNullOrEmpty(item.MoTa) ? "Chưa có mô tả" : item.MoTa)</p>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="bg-light rounded p-2 text-center">
+                                    <div class="fw-bold text-primary fs-5">@soThanhVien</div>
+                                    <div class="text-muted" style="font-size:0.75rem">Tài khoản</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded p-2 text-center">
+                                    <div class="fw-bold text-success fs-5">@soNhanCong</div>
+                                    <div class="text-muted" style="font-size:0.75rem">Nhân công</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary rounded-pill flex-grow-1">
+                                <i class="bi bi-pencil me-1"></i>Sửa mô tả
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary rounded-pill">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            @if (!isAdmin && soThanhVien == 0 && soNhanCong == 0)
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-briefcase display-1 mb-3"></i>
+            <p>Chưa có chức vụ nào. <a asp-action="Create">Thêm chức vụ mới</a></p>
+        </div>
+    }
+</div>

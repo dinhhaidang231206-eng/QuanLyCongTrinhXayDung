@@ -1,0 +1,63 @@
+@model QuanLyCongTrinhXayDung.Models.BaoCaoTienDo
+
+@{
+    ViewData["Title"] = "Thêm mới";
+}
+
+<h1>Thêm mới</h1>
+
+<h4>Báo cáo tiến độ</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="TieuDe" class="control-label"></label>
+                <input asp-for="TieuDe" class="form-control" placeholder="Ví dụ: Báo cáo sự cố máy xúc..." />
+                <span asp-validation-for="TieuDe" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="GiaiDoanId" class="control-label"></label>
+                <select asp-for="GiaiDoanId" class ="form-control" asp-items="ViewBag.GiaiDoanId"></select>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="UuTien" class="control-label"></label>
+                <select asp-for="UuTien" class="form-control" asp-items="Html.GetEnumSelectList<QuanLyCongTrinhXayDung.Models.DoUuTien>()"></select>
+                <span asp-validation-for="UuTien" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NgayBaoCao" class="control-label"></label>
+                <input asp-for="NgayBaoCao" class="form-control" />
+                <span asp-validation-for="NgayBaoCao" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="NoiDung" class="control-label"></label>
+                <textarea asp-for="NoiDung" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="NoiDung" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label class="control-label">Hình ảnh đính kèm (Có thể chọn nhiều)</label>
+                <input type="file" name="files" multiple class="form-control" accept="image/*" />
+            </div>
+            @if (User.IsInRole("Admin") || User.IsInRole("Quản trị viên"))
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="ThanhVienId" class="control-label"></label>
+                    <select asp-for="ThanhVienId" class="form-control" asp-items="ViewBag.ThanhVienId">
+                        <option value="">-- Chọn người báo cáo --</option>
+                    </select>
+                    <span asp-validation-for="ThanhVienId" class="text-danger"></span>
+                </div>
+            }
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

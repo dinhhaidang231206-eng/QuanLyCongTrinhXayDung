@@ -1,0 +1,160 @@
+@model QuanLyCongTrinhXayDung.Models.DichVu
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>DichVu</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="LoaiDichVu" class="control-label"></label>
+                <select asp-for="LoaiDichVu" class="form-control" asp-items="Html.GetEnumSelectList<LoaiDichVu>()"></select>
+                <span asp-validation-for="LoaiDichVu" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="divLoaiDichVuKhac" style="display: none;">
+                <label asp-for="LoaiDichVuKhac" class="control-label"></label>
+                <input asp-for="LoaiDichVuKhac" class="form-control" placeholder="Nhập tên loại dịch vụ..." />
+                <span asp-validation-for="LoaiDichVuKhac" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MoTa" class="control-label"></label>
+                <textarea asp-for="MoTa" class="form-control" rows="3" placeholder="Nhập mô tả chi tiết cho loại dịch vụ này..."></textarea>
+                <span asp-validation-for="MoTa" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GiaiDoanId" class="control-label"></label>
+                <select asp-for="GiaiDoanId" class="form-control" asp-items="ViewBag.GiaiDoanId"></select>
+                <span asp-validation-for="GiaiDoanId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NhaCungCap" class="control-label"></label>
+                <select id="NhaCungCapSelect" class="form-control" data-selected="@Model.NhaCungCap">
+                    <option value="">-- Chọn nhà cung cấp --</option>
+                </select>
+                <input type="hidden" asp-for="NhaCungCap" id="NhaCungCapHidden" />
+                <span asp-validation-for="NhaCungCap" class="text-danger"></span>
+            </div>
+            <div class="form-group" id="divNhaCungCapKhac" style="display: none;">
+                <input type="text" id="NhaCungCapKhac" class="form-control mt-2" placeholder="Nhập tên nhà cung cấp khác..." />
+            </div>
+            <div class="form-group">
+                <label asp-for="DonGia" class="control-label"></label>
+                <input asp-for="DonGia" class="form-control" />
+                <span asp-validation-for="DonGia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SoLuong" class="control-label"></label>
+                <input asp-for="SoLuong" class="form-control" />
+                <span asp-validation-for="SoLuong" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThoiGianBatDau" class="control-label"></label>
+                <input asp-for="ThoiGianBatDau" class="form-control" />
+                <span asp-validation-for="ThoiGianBatDau" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThoiGianKetThuc" class="control-label"></label>
+                <input asp-for="ThoiGianKetThuc" class="form-control" />
+                <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TrangThai" class="control-label"></label>
+                <select asp-for="TrangThai" class="form-control" asp-items="Html.GetEnumSelectList<TrangThaiChung>()"></select>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MucDichSuDung" class="control-label"></label>
+                <input asp-for="MucDichSuDung" class="form-control" />
+                <span asp-validation-for="MucDichSuDung" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            var providers = {
+                "0": ["Công ty TNHH Vận Tải Xây Dựng Số 1", "Nhà xe Tuấn Anh", "Công ty Vận Tải ABC", "Khác"], // Vận chuyển
+                "1": ["Nhà thầu vệ sinh công nghiệp Hoàng Gia", "Công ty TNHH Vệ Sinh Xanh", "Dịch vụ dọn dẹp 247", "Khác"], // Vệ sinh
+                "2": ["Tổ tư vấn giám sát Độc Lập", "Công ty CP Tư Vấn Thiết Kế", "Viện Kiểm định Xây Dựng", "Khác"], // Tư vấn
+                "3": ["Công ty CP Thiết Bị Trọng Yếu", "Công ty TNHH Dịch vụ Phụ trợ", "Khác"] // Khác
+            };
+
+            function updateProviders() {
+                var selectedType = $("#LoaiDichVu").val();
+                var providerSelect = $("#NhaCungCapSelect");
+                
+                var currentSelection = providerSelect.data('selected') || providerSelect.val();
+                providerSelect.empty();
+                providerSelect.append('<option value="">-- Chọn nhà cung cấp --</option>');
+                
+                if (selectedType && providers[selectedType]) {
+                    $.each(providers[selectedType], function (index, provider) {
+                        providerSelect.append($('<option></option>').val(provider).html(provider));
+                    });
+                } else {
+                    providerSelect.append('<option value="Khác">Khác</option>');
+                }
+
+                if (currentSelection && providerSelect.find('option[value="' + currentSelection + '"]').length > 0) {
+                    providerSelect.val(currentSelection);
+                } else if (currentSelection && currentSelection !== "") {
+                    // It's a custom provider not in list
+                    providerSelect.val("Khác");
+                    $("#NhaCungCapKhac").val(currentSelection);
+                }
+            }
+
+            function toggleKhacInputs() {
+                var selectedType = $("#LoaiDichVu").val();
+                if (selectedType == "3") { // 3 is Khac
+                    $("#divLoaiDichVuKhac").slideDown();
+                } else {
+                    $("#divLoaiDichVuKhac").slideUp();
+                }
+                
+                var selectedProvider = $("#NhaCungCapSelect").val();
+                if (selectedProvider == "Khác") {
+                    $("#divNhaCungCapKhac").slideDown();
+                } else {
+                    $("#divNhaCungCapKhac").slideUp();
+                }
+            }
+
+            $("#LoaiDichVu").change(function() {
+                updateProviders();
+                toggleKhacInputs();
+            });
+            
+            $("#NhaCungCapSelect").change(toggleKhacInputs);
+            
+            $("form").submit(function() {
+                var provider = $("#NhaCungCapSelect").val();
+                if (provider == "Khác") {
+                    $("#NhaCungCapHidden").val($("#NhaCungCapKhac").val());
+                } else {
+                    $("#NhaCungCapHidden").val(provider);
+                }
+            });
+
+            updateProviders(); // Initialize on load
+            toggleKhacInputs(); // Initialize inputs on load
+        });
+    </script>
+}

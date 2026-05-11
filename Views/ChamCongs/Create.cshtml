@@ -1,0 +1,67 @@
+@model QuanLyCongTrinhXayDung.Models.ChamCong
+
+@{
+    ViewData["Title"] = "Thêm Chấm Công";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-calendar-plus-fill me-2"></i>Thêm Bảng Chấm Công</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="NhanCongId" class="form-label fw-bold">Nhân công</label>
+                            <select asp-for="NhanCongId" class="form-select" asp-items="ViewBag.NhanCongId">
+                                <option value="">-- Chọn nhân công --</option>
+                            </select>
+                            <span asp-validation-for="NhanCongId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Ngay" class="form-label fw-bold">Ngày chấm công</label>
+                            <input asp-for="Ngay" class="form-control" type="date" />
+                            <span asp-validation-for="Ngay" class="text-danger"></span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label asp-for="GioDen" class="form-label fw-bold text-primary">Giờ đến</label>
+                                <input asp-for="GioDen" class="form-control" type="time" />
+                                <span asp-validation-for="GioDen" class="text-danger"></span>
+                            </div>
+                            <div class="col-6">
+                                <label asp-for="GioVe" class="form-label fw-bold text-warning">Giờ về</label>
+                                <input asp-for="GioVe" class="form-control" type="time" />
+                                <span asp-validation-for="GioVe" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="SoCong" class="form-label fw-bold">Số công (chấm thủ công)</label>
+                            <input asp-for="SoCong" class="form-control" type="number" step="0.1" />
+                            <span asp-validation-for="SoCong" class="text-danger"></span>
+                            <div class="form-text">Bạn có thể tự điền số công thay vì để hệ thống tính.</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success rounded-pill px-4">
+                                <i class="bi bi-save me-2"></i>Lưu lại
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Hủy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Hệ thống Quản lý Công Trình";
+}
+
+<div class="text-center hero-section">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold text-gradient mb-4">Quản Lý Công Trình Xây Dựng <br> Thông Minh & Chuyên Nghiệp</h1>
+        <p class="lead mb-5 text-secondary">Hệ thống giải pháp toàn diện giúp bạn dễ dàng theo dõi tiến độ, phân bổ nguồn lực và quản lý chi phí cho mọi dự án xây dựng.</p>
+        
+        <div class="d-flex justify-content-center gap-3 mt-4">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-5 rounded-pill shadow-sm">Bắt đầu ngay</a>
+            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-dark btn-lg px-5 rounded-pill">Đăng nhập</a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5 mt-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="p-4 border rounded-4 h-100 shadow-sm">
+                <i class="bi bi-shield-check display-5 text-primary mb-3"></i>
+                <h4 class="fw-bold">Bảo mật cao</h4>
+                <p class="text-muted">Hệ thống phân quyền chi tiết cho Admin và Thành viên.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 border rounded-4 h-100 shadow-sm">
+                <i class="bi bi-clock-history display-5 text-success mb-3"></i>
+                <h4 class="fw-bold">Tiến độ thực tế</h4>
+                <p class="text-muted">Cập nhật báo cáo tiến độ với hình ảnh trực quan.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-4 border rounded-4 h-100 shadow-sm">
+                <i class="bi bi-graph-up-arrow display-5 text-info mb-3"></i>
+                <h4 class="fw-bold">Quản lý chi phí</h4>
+                <p class="text-muted">Theo dõi ngân sách và chi phí thực tế cho từng dự án.</p>
+            </div>
+        </div>
+    </div>
+</div>

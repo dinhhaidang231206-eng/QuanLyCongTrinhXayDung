@@ -1,0 +1,84 @@
+@model IEnumerable<QuanLyCongTrinhXayDung.Models.BaoCaoTienDo>
+
+@{
+    ViewData["Title"] = "Danh sách Báo cáo tiến độ";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Báo cáo tiến độ</h1>
+    @if (!(User.IsInRole("Admin") || User.IsInRole("Quản trị viên")))
+    {
+        <p>
+            <a asp-action="Create" class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-plus-circle"></i> Tạo báo cáo mới
+            </a>
+        </p>
+    }
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4">@Html.DisplayNameFor(model => model.TieuDe)</th>
+                    <th>@Html.DisplayNameFor(model => model.NgayBaoCao)</th>
+                    <th>@Html.DisplayNameFor(model => model.UuTien)</th>
+                    <th>@Html.DisplayNameFor(model => model.GiaiDoan)</th>
+                    <th>Phản hồi</th>
+                    <th>@Html.DisplayNameFor(model => model.NguoiBaoCao)</th>
+                    <th class="text-center pe-4">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model) {
+                    <tr>
+                        <td class="ps-4">
+                            <span class="fw-bold text-primary">@Html.DisplayFor(modelItem => item.TieuDe)</span>
+                        </td>
+                        <td>@item.NgayBaoCao.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @{
+                                var badgeClass = item.UuTien switch
+                                {
+                                    QuanLyCongTrinhXayDung.Models.DoUuTien.Thap => "bg-success",
+                                    QuanLyCongTrinhXayDung.Models.DoUuTien.TrungBinh => "bg-info",
+                                    QuanLyCongTrinhXayDung.Models.DoUuTien.Cao => "bg-warning",
+                                    QuanLyCongTrinhXayDung.Models.DoUuTien.KhanCap => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @badgeClass">@Html.DisplayFor(modelItem => item.UuTien)</span>
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.GiaiDoan.TenGiaiDoan)</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.TraLoi))
+                            {
+                                <span class="text-success"><i class="bi bi-check-all"></i> Đã phản hồi</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Chờ...</span>
+                            }
+                        </td>
+                        <td>@(item.NguoiBaoCao?.HoTen ?? "N/A")</td>
+                        <td class="text-center pe-4">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Xem chi tiết nội dung"><i class="bi bi-eye"></i></a>
+                                @if (User.IsInRole("Admin") || User.IsInRole("Quản trị viên"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary" title="Sửa/Phản hồi"><i class="bi bi-reply"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></a>
+                                }
+                                else
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary" title="Sửa"><i class="bi bi-pencil"></i></a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

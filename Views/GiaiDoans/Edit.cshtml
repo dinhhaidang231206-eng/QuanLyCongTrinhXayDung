@@ -1,0 +1,69 @@
+@model QuanLyCongTrinhXayDung.Models.GiaiDoan
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>GiaiDoan</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="TenGiaiDoan" class="control-label"></label>
+                <input asp-for="TenGiaiDoan" class="form-control" />
+                <span asp-validation-for="TenGiaiDoan" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CongTrinhId" class="control-label"></label>
+                <select asp-for="CongTrinhId" class="form-control" asp-items="ViewBag.CongTrinhId"></select>
+                <span asp-validation-for="CongTrinhId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThoiGianBatDau" class="control-label"></label>
+                <input asp-for="ThoiGianBatDau" class="form-control" />
+                <span asp-validation-for="ThoiGianBatDau" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThoiGianKetThuc" class="control-label"></label>
+                <input asp-for="ThoiGianKetThuc" class="form-control" />
+                <span asp-validation-for="ThoiGianKetThuc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThoiGianHoanThanh" class="control-label"></label>
+                <input asp-for="ThoiGianHoanThanh" class="form-control" />
+                <span asp-validation-for="ThoiGianHoanThanh" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="TrangThai" class="control-label"></label>
+                <select asp-for="TrangThai" class="form-control" asp-items="Html.GetEnumSelectList<TrangThaiChung>()"></select>
+                <span asp-validation-for="TrangThai" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ChiPhiDuKien" class="control-label"></label>
+                <input asp-for="ChiPhiDuKien" class="form-control" />
+                <span asp-validation-for="ChiPhiDuKien" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ChiPhiThucTe" class="control-label"></label>
+                <input asp-for="ChiPhiThucTe" class="form-control" />
+                <span asp-validation-for="ChiPhiThucTe" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

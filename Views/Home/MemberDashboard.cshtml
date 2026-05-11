@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Giao diện Thành viên";
+    int? nhanCongId = ViewBag.NhanCongId as int?;
+    var chamCongHomNay = ViewBag.ChamCongHomNay as QuanLyCongTrinhXayDung.Models.ChamCong;
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="fw-bold mb-0">Không gian làm việc</h1>
+            <p class="text-muted">Chào mừng trở lại, <strong>@User.Identity.Name</strong></p>
+        </div>
+        <span class="badge bg-primary rounded-pill px-3 py-2">Thành viên</span>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["WarningMessage"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i> @TempData["WarningMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Cột trái: Chấm công và Báo cáo -->
+        <div class="col-md-8">
+            
+            <!-- WIDGET CHẤM CÔNG -->
+            <div class="card shadow-sm border-0 mb-4 @(chamCongHomNay != null && chamCongHomNay.GioVe != null ? "bg-success text-white" : "bg-white")">
+                <div class="card-body p-4 text-center">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-clock-history me-2"></i>Điểm danh hôm nay (@DateTime.Today.ToString("dd/MM/yyyy"))</h4>
+                    
+                    @if (nhanCongId == null)
+                    {
+                        <div class="alert alert-secondary mb-0">
+                            Hệ thống không tìm thấy bạn trong bất kỳ Công trình/Giai đoạn nào đang thi công. 
+                            Bạn không thể chấm công lúc này.
+                        </div>
+                    }
+                    else if (chamCongHomNay == null)
+                    {
+                        <p class="text-muted">Bạn đang làm việc tại: <strong>@ViewBag.TenCongTrinh / @ViewBag.TenGiaiDoan</strong></p>
+                        <form asp-controller="Home" asp-action="CheckIn" method="post">
+                            <input type="hidden" name="nhanCongId" value="@nhanCongId" />
+                            <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> BÁO DANH ĐẾN
+                            </button>
+                        </form>
+                    }
+                    else if (chamCongHomNay.GioVe == null)
+                    {
+                        <p class="text-muted">Giờ đến của bạn: <strong class="fs-4 text-primary">@chamCongHomNay.GioDen?.ToString(@"hh\:mm")</strong></p>
+                        <form asp-controller="Home" asp-action="CheckOut" method="post">
+                            <input type="hidden" name="chamCongId" value="@chamCongHomNay.Id" />
+                            <button type="submit" class="btn btn-warning btn-lg rounded-pill px-5 py-3 fw-bold shadow">
+                                <i class="bi bi-box-arrow-right me-2"></i> BÁO DANH VỀ
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <i class="bi bi-check-circle-fill display-1 mb-3"></i>
+                        <h5 class="fw-bold">Bạn đã hoàn thành chấm công hôm nay!</h5>
+                        <p class="mb-0">Giờ đến: <strong>@chamCongHomNay.GioDen?.ToString(@"hh\:mm")</strong> &mdash; Giờ về: <strong>@chamCongHomNay.GioVe?.ToString(@"hh\:mm")</strong></p>
+                    }
+                </div>
+            </div>
+
+            <!-- Báo cáo -->
+            <div class="card shadow-sm border-0 mb-4 bg-light">
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-file-earmark-plus display-4 text-primary mb-3"></i>
+                    <h4 class="fw-bold">Báo cáo tiến độ</h4>
+                    <p class="text-muted mb-4">Gửi báo cáo tiến độ hằng ngày để quản lý nắm bắt tình hình công trường nhanh nhất.</p>
+                    <a asp-controller="BaoCaoTienDos" asp-action="Create" class="btn btn-primary rounded-pill px-4">Gửi báo cáo ngay</a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Cột phải: Thông tin cá nhân -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white border-bottom-0 pt-4">
+                    <h5 class="fw-bold"><i class="bi bi-person-badge text-info"></i> Thông tin cá nhân</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0 px-0 d-flex justify-content-between">
+                            <span class="text-muted">Họ tên:</span>
+                            <span class="fw-bold">@User.Identity.Name</span>
+                        </li>
+                        <li class="list-group-item border-0 px-0 d-flex justify-content-between">
+                            <span class="text-muted">Vai trò:</span>
+                            <span class="badge bg-secondary">Thành viên</span>
+                        </li>
+                    </ul>
+                    <hr>
+                    <div class="d-grid gap-2">
+                        <a asp-controller="BaoCaoTienDos" asp-action="Index" class="btn btn-outline-dark rounded-pill">Xem lịch sử báo cáo</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

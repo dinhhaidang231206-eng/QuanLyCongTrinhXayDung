@@ -1,0 +1,51 @@
+@model QuanLyCongTrinhXayDung.Models.BaoCaoTienDo
+
+@{
+    ViewData["Title"] = "Xóa báo cáo";
+}
+
+<h1>Xóa báo cáo</h1>
+
+<h3>Bạn có chắc chắn muốn xóa báo cáo này không?</h3>
+<div>
+    <h4>Báo cáo tiến độ</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GiaiDoan)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GiaiDoan.TenGiaiDoan)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NgayBaoCao)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NgayBaoCao)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NoiDung)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NoiDung)
+        </dd>
+        <dt class = "col-sm-2">
+            Số lượng ảnh
+        </dt>
+        <dd class = "col-sm-10">
+            @(Model.HinhAnhs?.Count ?? 0)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NguoiBaoCao)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NguoiBaoCao)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Xác nhận xóa" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

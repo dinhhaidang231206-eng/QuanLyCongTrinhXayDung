@@ -1,0 +1,88 @@
+@model QuanLyCongTrinhXayDung.Models.NhanCong
+
+@{
+    ViewData["Title"] = "Thêm nhân công";
+}
+
+<h1>Thêm nhân công</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="HoTen" class="control-label"></label>
+                <select asp-for="HoTen" class="form-control" asp-items="ViewBag.ThanhVienList">
+                    <option value="">-- Chọn thành viên --</option>
+                </select>
+                <span asp-validation-for="HoTen" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Công trình</label>
+                <select id="CongTrinhId" class="form-control" asp-items="ViewBag.CongTrinhId">
+                    <option value="">-- Chọn công trình --</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="GiaiDoanId" class="control-label"></label>
+                <select asp-for="GiaiDoanId" class="form-control" asp-items="ViewBag.GiaiDoanId">
+                    <option value="">-- Chọn giai đoạn --</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="ChucVuId" class="control-label"></label>
+                <select asp-for="ChucVuId" class="form-control" asp-items="ViewBag.ChucVuId">
+                    <option value="">-- Chọn chức vụ --</option>
+                </select>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Luong" class="control-label"></label>
+                <input asp-for="Luong" class="form-control" />
+                <span asp-validation-for="Luong" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NgayBatDau" class="control-label"></label>
+                <input asp-for="NgayBatDau" class="form-control" type="date" />
+                <span asp-validation-for="NgayBatDau" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="NgayKetThuc" class="control-label"></label>
+                <input asp-for="NgayKetThuc" class="form-control" type="date" />
+                <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('#CongTrinhId').change(function () {
+                var congTrinhId = $(this).val();
+                var giaiDoanSelect = $('#GiaiDoanId');
+                giaiDoanSelect.empty();
+                giaiDoanSelect.append($('<option/>', { value: '', text: '-- Chọn giai đoạn --' }));
+                if (congTrinhId) {
+                    $.getJSON('@Url.Action("GetGiaiDoans", "NhanCongs")', { congTrinhId: congTrinhId }, function (data) {
+                        $.each(data, function (index, item) {
+                            giaiDoanSelect.append($('<option/>', { value: item.value, text: item.text }));
+                        });
+                    });
+                }
+            });
+        });
+    </script>
+}

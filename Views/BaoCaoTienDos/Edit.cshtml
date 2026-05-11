@@ -1,0 +1,128 @@
+@model QuanLyCongTrinhXayDung.Models.BaoCaoTienDo
+
+@{
+    ViewData["Title"] = "Chỉnh sửa";
+}
+
+<h1>Chỉnh sửa</h1>
+
+<h4>Báo cáo tiến độ</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            
+            <div class="form-group mb-3">
+                <label asp-for="TieuDe" class="control-label"></label>
+                <input asp-for="TieuDe" class="form-control" />
+                <span asp-validation-for="TieuDe" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="GiaiDoanId" class="control-label"></label>
+                <select asp-for="GiaiDoanId" class="form-control" asp-items="ViewBag.GiaiDoanId"></select>
+                <span asp-validation-for="GiaiDoanId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="UuTien" class="control-label"></label>
+                <select asp-for="UuTien" class="form-control" asp-items="Html.GetEnumSelectList<QuanLyCongTrinhXayDung.Models.DoUuTien>()"></select>
+                <span asp-validation-for="UuTien" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="NgayBaoCao" class="control-label"></label>
+                <input asp-for="NgayBaoCao" class="form-control" />
+                <span asp-validation-for="NgayBaoCao" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="NoiDung" class="control-label"></label>
+                <textarea asp-for="NoiDung" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="NoiDung" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="control-label">Hình ảnh hiện tại</label>
+                <div class="row g-2 mb-2">
+                    @if (Model.HinhAnhs != null && Model.HinhAnhs.Any())
+                    {
+                        foreach (var img in Model.HinhAnhs)
+                        {
+                            <div class="col-md-3 position-relative image-container" id="img-@img.Id">
+                                <img src="@img.DuongDan" class="img-thumbnail w-100 h-100" style="object-fit: cover; aspect-ratio: 1/1;" />
+                                <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1" onclick="deleteImage(@img.Id)">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted small ms-2">Chưa có hình ảnh nào.</p>
+                    }
+                </div>
+                
+                <label class="control-label">Tải thêm ảnh mới</label>
+                <input type="file" name="files" multiple class="form-control" accept="image/*" />
+            </div>
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Quản trị viên"))
+            {
+                <div class="form-group mb-3 p-3 bg-light rounded border border-warning">
+                    <label asp-for="TraLoi" class="control-label fw-bold text-warning"></label>
+                    <textarea asp-for="TraLoi" class="form-control" rows="3" placeholder="Nhập nội dung phản hồi cho báo cáo này..."></textarea>
+                    <span asp-validation-for="TraLoi" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="TraLoi" />
+            }
+
+            @if (User.IsInRole("Admin") || User.IsInRole("Quản trị viên"))
+            {
+                <div class="form-group mb-3">
+                    <label asp-for="ThanhVienId" class="control-label"></label>
+                    <div class="form-control-plaintext border rounded px-3 bg-light">
+                        <i class="bi bi-person-fill me-2 text-primary"></i>
+                        <span class="fw-bold">@(Model.NguoiBaoCao?.HoTen ?? "Chưa xác định")</span>
+                    </div>
+                    <input type="hidden" asp-for="ThanhVienId" />
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="ThanhVienId" />
+            }
+
+            <div class="form-group">
+                <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function deleteImage(id) {
+            if (confirm('Bạn có chắc muốn xóa ảnh này không?')) {
+                $.ajax({
+                    url: '/BaoCaoTienDos/DeleteImage',
+                    type: 'POST',
+                    data: { imageId: id },
+                    success: function () {
+                        $('#img-' + id).remove();
+                    },
+                    error: function () {
+                        alert('Có lỗi xảy ra khi xóa ảnh.');
+                    }
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản Lý Công Trình</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/QuanLyCongTrinhXayDung.styles.css" asp-append-version="true" />
+    <style>
+        body { display: flex; min-height: 100vh; background: #f5f6fa; }
+
+        /* ===== SIDEBAR ===== */
+        #sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1a1f36 0%, #2d3561 100%);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 1000;
+            transition: width 0.3s ease;
+            overflow-x: hidden;
+        }
+        #sidebar.collapsed { width: 65px; }
+        #sidebar.collapsed .sidebar-label,
+        #sidebar.collapsed .sidebar-brand-text,
+        #sidebar.collapsed .sidebar-section-title,
+        #sidebar.collapsed .sidebar-user-info { display: none !important; }
+        #sidebar.collapsed .sidebar-nav-link { justify-content: center; padding: 12px 0; }
+        #sidebar.collapsed .sidebar-nav-link i { margin: 0 !important; font-size: 1.3rem; }
+
+        .sidebar-brand {
+            padding: 20px 18px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .sidebar-brand-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem; color: white;
+        }
+        .sidebar-brand-text { color: white; font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
+        .sidebar-brand-text small { color: rgba(255,255,255,0.5); font-weight: 400; font-size: 0.7rem; }
+
+        .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+        .sidebar-section-title {
+            color: rgba(255,255,255,0.35);
+            font-size: 0.65rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            padding: 16px 18px 6px;
+        }
+        .sidebar-nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 18px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: 0;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .sidebar-nav-link:hover, .sidebar-nav-link.active {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+        .sidebar-nav-link.active::before {
+            content: '';
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: #667eea;
+            border-radius: 0 3px 3px 0;
+        }
+        .sidebar-nav-link i { font-size: 1.05rem; flex-shrink: 0; width: 20px; text-align: center; }
+        .sidebar-label { white-space: nowrap; }
+
+        .sidebar-collapse-group .sidebar-sub {
+            display: none;
+            background: rgba(0,0,0,0.15);
+        }
+        .sidebar-collapse-group.open .sidebar-sub { display: block; }
+        .sidebar-collapse-group .sidebar-collapse-btn .arrow {
+            transition: transform 0.2s;
+        }
+        .sidebar-collapse-group.open .sidebar-collapse-btn .arrow { transform: rotate(90deg); }
+        .sidebar-sub .sidebar-nav-link { padding-left: 50px; font-size: 0.82rem; }
+
+        .sidebar-footer {
+            padding: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-user {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 8px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+        }
+        .sidebar-user-avatar {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1rem; flex-shrink: 0;
+        }
+        .sidebar-user-info .name { color: white; font-size: 0.83rem; font-weight: 600; }
+        .sidebar-user-info .role { color: rgba(255,255,255,0.45); font-size: 0.7rem; }
+
+        /* ===== MAIN CONTENT ===== */
+        #main-wrapper {
+            margin-left: 260px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left 0.3s ease;
+            min-height: 100vh;
+        }
+        #main-wrapper.expanded { margin-left: 65px; }
+
+        #topbar {
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            padding: 10px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 900;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        #toggle-sidebar {
+            background: none; border: none; font-size: 1.3rem;
+            color: #666; cursor: pointer; padding: 4px 8px;
+            border-radius: 6px;
+        }
+        #toggle-sidebar:hover { background: #f0f0f0; }
+
+        main { flex: 1; padding: 8px 0; }
+        footer { background: white; border-top: 1px solid #e9ecef; padding: 12px 24px; text-align: center; font-size: 0.8rem; color: #999; }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            #sidebar { transform: translateX(-260px); }
+            #sidebar.mobile-open { transform: translateX(0); }
+            #main-wrapper { margin-left: 0 !important; }
+        }
+    </style>
+</head>
+<body>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        bool isAdmin = User.IsInRole("Admin") || User.IsInRole("Quản trị viên");
+
+        <!-- SIDEBAR -->
+        <nav id="sidebar">
+            <!-- Brand -->
+            <a class="sidebar-brand" asp-controller="Home" asp-action="Index">
+                <div class="sidebar-brand-icon"><i class="bi bi-building"></i></div>
+                <div class="sidebar-brand-text">
+                    QL Công Trình<br>
+                    <small>Xây Dựng</small>
+                </div>
+            </a>
+
+            <!-- Nav Items -->
+            <div class="sidebar-nav">
+                <div class="sidebar-section-title">Tổng quan</div>
+                <a class="sidebar-nav-link" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-house-door"></i>
+                    <span class="sidebar-label">Trang chủ</span>
+                </a>
+
+                @if (isAdmin)
+                {
+                    <div class="sidebar-section-title">Quản lý dự án</div>
+                    <a class="sidebar-nav-link" asp-controller="CongTrinhs" asp-action="Index">
+                        <i class="bi bi-building"></i>
+                        <span class="sidebar-label">Công Trình</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="GiaiDoans" asp-action="Index">
+                        <i class="bi bi-diagram-3"></i>
+                        <span class="sidebar-label">Giai Đoạn</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="NhanCongs" asp-action="Index">
+                        <i class="bi bi-people"></i>
+                        <span class="sidebar-label">Nhân Công</span>
+                    </a>
+
+                    <div class="sidebar-section-title">Vật tư & Thiết bị</div>
+                    <a class="sidebar-nav-link" asp-controller="VatLieus" asp-action="Index">
+                        <i class="bi bi-box-seam"></i>
+                        <span class="sidebar-label">Vật Liệu</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="MayMocs" asp-action="Index">
+                        <i class="bi bi-gear-wide-connected"></i>
+                        <span class="sidebar-label">Máy Móc</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="DichVus" asp-action="Index">
+                        <i class="bi bi-truck"></i>
+                        <span class="sidebar-label">Dịch Vụ</span>
+                    </a>
+
+                    <div class="sidebar-section-title">Theo dõi</div>
+                    <a class="sidebar-nav-link" asp-controller="ChamCongs" asp-action="Index">
+                        <i class="bi bi-calendar-check"></i>
+                        <span class="sidebar-label">Chấm Công</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="BaoCaoTienDos" asp-action="Index">
+                        <i class="bi bi-clipboard-data"></i>
+                        <span class="sidebar-label">Báo Cáo Tiến Độ</span>
+                    </a>
+
+                    <div class="sidebar-section-title">Hệ thống</div>
+                    <a class="sidebar-nav-link" asp-controller="ChucVus" asp-action="Index">
+                        <i class="bi bi-briefcase"></i>
+                        <span class="sidebar-label">Chức Vụ</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="ThanhViens" asp-action="Index">
+                        <i class="bi bi-person-badge"></i>
+                        <span class="sidebar-label">Thành Viên</span>
+                    </a>
+                }
+                else
+                {
+                    <div class="sidebar-section-title">Công việc</div>
+                    <a class="sidebar-nav-link" asp-controller="BaoCaoTienDos" asp-action="Index">
+                        <i class="bi bi-clipboard-check"></i>
+                        <span class="sidebar-label">Báo cáo của tôi</span>
+                    </a>
+                    <a class="sidebar-nav-link" asp-controller="BaoCaoTienDos" asp-action="Create">
+                        <i class="bi bi-plus-square"></i>
+                        <span class="sidebar-label">Gửi báo cáo mới</span>
+                    </a>
+                }
+            </div>
+
+            <!-- User Footer -->
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="sidebar-user-avatar"><i class="bi bi-person-fill"></i></div>
+                    <div class="sidebar-user-info">
+                        <div class="name">@User.Identity.Name</div>
+                        <div class="role">@(isAdmin ? "Quản trị viên" : "Thành viên")</div>
+                    </div>
+                </div>
+                <a asp-controller="Account" asp-action="Logout"
+                   class="sidebar-nav-link mt-2 text-danger" style="border-radius:8px; padding: 8px 12px;">
+                    <i class="bi bi-box-arrow-left"></i>
+                    <span class="sidebar-label">Đăng xuất</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- MAIN -->
+        <div id="main-wrapper">
+            <!-- Topbar -->
+            <div id="topbar">
+                <button id="toggle-sidebar" title="Thu/mở menu">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge @(isAdmin ? "bg-danger" : "bg-primary") rounded-pill px-3 py-2">
+                        <i class="bi bi-person-circle me-1"></i>
+                        @User.Identity.Name
+                        — @(isAdmin ? "Quản trị" : "Thành viên")
+                    </span>
+                </div>
+            </div>
+            <main class="px-4 py-3">
+                @RenderBody()
+            </main>
+            <footer>
+                &copy; 2026 Quản Lý Công Trình Xây Dựng
+            </footer>
+        </div>
+    }
+    else
+    {
+        <!-- Guest: không có sidebar, layout đơn giản -->
+        <div class="w-100">
+            <nav class="navbar navbar-expand-sm bg-white border-bottom shadow-sm px-4">
+                <a class="navbar-brand fw-bold text-primary" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-building me-2"></i>QL Công Trình
+                </a>
+                <div class="ms-auto d-flex gap-2">
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary rounded-pill px-3">Đăng nhập</a>
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-primary rounded-pill px-3">Đăng ký</a>
+                </div>
+            </nav>
+            <main class="container py-4">
+                @RenderBody()
+            </main>
+            <footer class="border-top text-center py-3 text-muted" style="font-size:0.8rem;">
+                &copy; 2026 Quản Lý Công Trình Xây Dựng
+            </footer>
+        </div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        // Toggle sidebar
+        const sidebar = document.getElementById('sidebar');
+        const mainWrapper = document.getElementById('main-wrapper');
+        const toggleBtn = document.getElementById('toggle-sidebar');
+
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                mainWrapper.classList.toggle('expanded');
+            });
+        }
+
+        // Active link highlighting
+        const currentPath = window.location.pathname.toLowerCase();
+        document.querySelectorAll('.sidebar-nav-link').forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && currentPath.startsWith(href.toLowerCase()) && href !== '/') {
+                link.classList.add('active');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
